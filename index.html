@@ -381,6 +381,7 @@
       height: 10px;
       border-radius: 5px;
       background: color-mix(in srgb, var(--text-muted) 25%, transparent);
+      width: 88%;
     }
     .mock-card .mock-bar.short { width: 50%; }
     .mock-card .mock-bar.mid { width: 75%; }
@@ -394,6 +395,172 @@
       font-weight: 600;
       margin-top: 4px;
     }
+    /* Phase 2: selection box snapped to the mock-card */
+    .mock-card::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border: 1.5px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 7%, transparent);
+      border-radius: 14px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 1;
+      animation: phase2 10.5s ease-in-out infinite;
+    }
+    .mock-card-measurement {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 2;
+      animation: phase2 10.5s ease-in-out infinite;
+    }
+    .mock-card-measurement .dim {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--accent);
+      color: #11111b;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: .01em;
+    }
+    .mock-card-measurement .ratio {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: rgba(0,0,0,.55);
+      color: var(--text);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Phase 1 & Phase 3: edge-detected crosshair, clipped to card bounds */
+    .mock-crosshair {
+      position: absolute;
+      inset: -1px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 3;
+    }
+    .mock-crosshair.phase-one { animation: phase1 10.5s ease-in-out infinite; }
+    .mock-crosshair.phase-three { animation: phase3 10.5s ease-in-out infinite; }
+    .mock-crosshair .mc-h,
+    .mock-crosshair .mc-v {
+      position: absolute;
+      background: var(--accent);
+    }
+    .mock-crosshair .mc-h { left: 0; right: 0; height: 1.5px; }
+    .mock-crosshair .mc-v { top: 0; bottom: 0; width: 1.5px; }
+    /* Perpendicular end caps on each measurement line */
+    .mock-crosshair .mc-h::before,
+    .mock-crosshair .mc-h::after,
+    .mock-crosshair .mc-v::before,
+    .mock-crosshair .mc-v::after {
+      content: "";
+      position: absolute;
+      background: var(--accent);
+    }
+    .mock-crosshair .mc-h::before,
+    .mock-crosshair .mc-h::after {
+      width: 1.5px;
+      height: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .mock-crosshair .mc-h::before { left: 0; }
+    .mock-crosshair .mc-h::after { right: 0; }
+    .mock-crosshair .mc-v::before,
+    .mock-crosshair .mc-v::after {
+      width: 9px;
+      height: 1.5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .mock-crosshair .mc-v::before { top: 0; }
+    .mock-crosshair .mc-v::after { bottom: 0; }
+    .mock-crosshair .mc-cursor {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      transform: translate(-50%, -50%);
+    }
+    .mock-crosshair .mc-cursor::before,
+    .mock-crosshair .mc-cursor::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background: #fff;
+      border-radius: 1px;
+      box-shadow: 0 0 0 0.5px rgba(0, 0, 0, .25);
+    }
+    .mock-crosshair .mc-cursor::before {
+      width: 18px;
+      height: 2px;
+      transform: translate(-50%, -50%);
+    }
+    .mock-crosshair .mc-cursor::after {
+      width: 2px;
+      height: 18px;
+      transform: translate(-50%, -50%);
+    }
+    .mock-crosshair .mc-label {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--accent);
+      color: #11111b;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: .01em;
+    }
+    /* Phase 1 cursor: top-padding strip + right empty strip past all bars */
+    .phase-one .mc-h { top: 7%; }
+    .phase-one .mc-v { left: 92%; }
+    .phase-one .mc-cursor { left: 92%; top: 7%; }
+    .phase-one .mc-label { left: calc(92% - 110px); top: calc(7% + 10px); }
+    /* Phase 3 cursor: empty zone right of CTA. H line edge-detects against
+       the CTA button's right edge, so it clips short instead of spanning
+       the full card width. V line still runs top-to-bottom (no bars at this X). */
+    .phase-three .mc-h { top: 75%; left: 35.3%; }
+    .phase-three .mc-v { left: 92%; }
+    .phase-three .mc-cursor { left: 92%; top: 75%; }
+    .phase-three .mc-label { left: calc(92% - 110px); top: calc(75% - 32px); }
+
+    /* Phase 3 guides: dashed lines aligned to each card edge,
+       extending way beyond the card. .demo-frame's overflow: hidden clips them. */
+    .mock-crosshair .mg-top,
+    .mock-crosshair .mg-right,
+    .mock-crosshair .mg-bottom,
+    .mock-crosshair .mg-left {
+      position: absolute;
+      pointer-events: none;
+    }
+    .mock-crosshair .mg-top,
+    .mock-crosshair .mg-bottom {
+      left: -1500px;
+      right: -1500px;
+      height: 0;
+      border-top: 1px dashed var(--good);
+    }
+    .mock-crosshair .mg-left,
+    .mock-crosshair .mg-right {
+      top: -1500px;
+      bottom: -1500px;
+      width: 0;
+      border-left: 1px dashed var(--good);
+    }
+    .mock-crosshair .mg-top { top: 0; }
+    .mock-crosshair .mg-bottom { bottom: 0; }
+    .mock-crosshair .mg-left { left: 0; }
+    .mock-crosshair .mg-right { right: 0; }
 
     /* Measurement overlay */
     .measure-overlay {
@@ -403,7 +570,9 @@
     }
     .measure-overlay svg { width: 100%; height: 100%; }
     .m-stroke { stroke: var(--accent); stroke-width: 1.5; fill: none; }
-    .m-tick { stroke: var(--accent); stroke-width: 1.5; }
+    .m-fill { fill: color-mix(in srgb, var(--accent) 8%, transparent); }
+    .m-guide { stroke: var(--good); stroke-width: 1; stroke-dasharray: 6 4; fill: none; opacity: .85; }
+    .m-cursor { stroke: var(--text); stroke-width: 1.25; }
 
     .m-label {
       font-family: var(--font-mono);
@@ -411,39 +580,29 @@
       fill: #11111b;
     }
     .m-label-bg { fill: var(--accent); }
+    .m-ratio-bg { fill: rgba(0,0,0,.55); }
+    .m-ratio { font-family: var(--font-mono); font-size: 10px; fill: var(--text); }
 
-    /* Animations */
-    @keyframes drawX {
-      from { stroke-dashoffset: 100%; }
-      to { stroke-dashoffset: 0; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes loopCycle {
-      0%, 90%, 100% { opacity: 0; }
-      10%, 80% { opacity: 1; }
-    }
+    /* Three-phase cycle: crosshair → box → guides */
+    .phase { opacity: 0; }
+    .phase-1 { animation: phase1 10.5s ease-in-out infinite; }
+    .phase-2 { animation: phase2 10.5s ease-in-out infinite; }
+    .phase-3 { animation: phase3 10.5s ease-in-out infinite; }
 
-    .measure-h, .measure-v {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
+    @keyframes phase1 {
+      0%       { opacity: 0; }
+      4%, 30%  { opacity: 1; }
+      34%, 100% { opacity: 0; }
     }
-    .measure-h { animation: drawH 1.2s .3s cubic-bezier(.4,0,.2,1) forwards; }
-    .measure-v { animation: drawV 1.2s 1.4s cubic-bezier(.4,0,.2,1) forwards; }
-    @keyframes drawH { to { stroke-dashoffset: 0; } }
-    @keyframes drawV { to { stroke-dashoffset: 0; } }
-
-    .label-h, .label-v {
-      opacity: 0;
+    @keyframes phase2 {
+      0%, 33%  { opacity: 0; }
+      37%, 63% { opacity: 1; }
+      67%, 100% { opacity: 0; }
     }
-    .label-h { animation: fadeIn .4s 1.2s forwards; }
-    .label-v { animation: fadeIn .4s 2.3s forwards; }
-
-    .crosshair-h, .crosshair-v {
-      opacity: 0;
-      animation: fadeIn .4s 2.6s forwards;
+    @keyframes phase3 {
+      0%, 66%  { opacity: 0; }
+      70%, 96% { opacity: 1; }
+      100%     { opacity: 0; }
     }
 
     /* ---------- section base ---------- */
@@ -609,6 +768,16 @@
     }
 
     /* ---------- tech / rust ---------- */
+    .tech-head {
+      margin: 0 0 40px;
+    }
+    .tech-head h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -.02em;
+      margin: 8px 0 0;
+      font-weight: 600;
+      text-wrap: balance;
+    }
     .tech-grid {
       display: grid;
       grid-template-columns: 1.1fr 1fr;
@@ -679,6 +848,7 @@
       padding: 18px 20px;
       line-height: 1.7;
       overflow-x: auto;
+      white-space: pre;
     }
     .code-body .prompt { color: var(--text-subtle); user-select: none; }
     .code-body .cmd { color: var(--text); }
@@ -837,11 +1007,12 @@
     <div class="container hero-grid">
       <div>
         <span class="eyebrow"><span class="dot"></span><span data-vernier-version>v0.2.0</span> · MIT / Apache-2.0</span>
-        <h1>Measure anything on your <span class="accent">screen.</span></h1>
+        <h1>Snap. Measure. Capture. <span class="accent">Hand off.</span></h1>
         <p class="lead">
-          A fast, native pixel-measurement overlay for designers and developers.
-          Snap to objects. Drop guides. Read distances. Vernier runs on macOS, Windows, and Linux —
-          including Wayland.
+          A native pixel-measurement overlay for designers and developers.
+          Edge-detected snaps that lock to real element bounds. Sticky guides, pinned
+          measurements, and region capture with one-click handoff to your annotation tool.
+          macOS, Linux, and Windows.
         </p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg" href="https://github.com/jondkinney/vernier/releases/latest" target="_blank" rel="noopener">
@@ -856,7 +1027,7 @@
         <div class="hero-meta">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Free forever</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Open source</span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Cross-platform</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>macOS · Linux · Windows</span>
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Built in Rust</span>
         </div>
       </div>
@@ -872,49 +1043,28 @@
             <div class="mock-bar short"></div>
             <div class="mock-bar"></div>
             <div class="mock-cta">Get started</div>
+            <div class="mock-card-measurement" aria-hidden="true">
+              <span class="dim">320 × 160 px</span>
+              <span class="ratio">2 : 1</span>
+            </div>
+            <div class="mock-crosshair phase-one" aria-hidden="true">
+              <span class="mc-h"></span>
+              <span class="mc-v"></span>
+              <span class="mc-cursor"></span>
+              <span class="mc-label">320 × 160 px</span>
+            </div>
+            <div class="mock-crosshair phase-three" aria-hidden="true">
+              <span class="mg-top"></span>
+              <span class="mg-right"></span>
+              <span class="mg-bottom"></span>
+              <span class="mg-left"></span>
+              <span class="mc-h"></span>
+              <span class="mc-v"></span>
+              <span class="mc-cursor"></span>
+              <span class="mc-label">207 × 160 px</span>
+            </div>
           </div>
 
-          <div class="measure-overlay">
-            <svg viewBox="0 0 600 400" preserveAspectRatio="none">
-              <!-- Horizontal measurement (top of card) -->
-              <g class="measure-h">
-                <line class="m-stroke" x1="120" y1="80" x2="120" y2="100"/>
-                <line class="m-stroke" x1="480" y1="80" x2="480" y2="100"/>
-                <line class="m-stroke" x1="120" y1="90" x2="480" y2="90" stroke-dasharray="4 4"/>
-                <line class="m-stroke" x1="120" y1="120" x2="480" y2="120"/>
-                <line class="m-tick" x1="120" y1="115" x2="120" y2="125"/>
-                <line class="m-tick" x1="480" y1="115" x2="480" y2="125"/>
-              </g>
-              <g class="label-h" transform="translate(264 78)">
-                <rect class="m-label-bg" x="0" y="0" width="72" height="22" rx="4"/>
-                <text class="m-label" x="36" y="15" text-anchor="middle">320 px</text>
-              </g>
-
-              <!-- Vertical measurement (left of card) -->
-              <g class="measure-v">
-                <line class="m-stroke" x1="100" y1="120" x2="120" y2="120"/>
-                <line class="m-stroke" x1="100" y1="320" x2="120" y2="320"/>
-                <line class="m-stroke" x1="110" y1="120" x2="110" y2="320" stroke-dasharray="4 4"/>
-                <line class="m-stroke" x1="80" y1="120" x2="80" y2="320"/>
-                <line class="m-tick" x1="75" y1="120" x2="85" y2="120"/>
-                <line class="m-tick" x1="75" y1="320" x2="85" y2="320"/>
-              </g>
-              <g class="label-v" transform="translate(36 210)">
-                <rect class="m-label-bg" x="0" y="0" width="68" height="22" rx="4"/>
-                <text class="m-label" x="34" y="15" text-anchor="middle">200 px</text>
-              </g>
-
-              <!-- Crosshair on the CTA button -->
-              <g class="crosshair-h">
-                <line class="m-stroke" x1="0" y1="270" x2="600" y2="270" stroke-dasharray="2 4" opacity=".5"/>
-              </g>
-              <g class="crosshair-v">
-                <line class="m-stroke" x1="195" y1="0" x2="195" y2="400" stroke-dasharray="2 4" opacity=".5"/>
-                <circle cx="195" cy="270" r="5" fill="var(--accent)"/>
-                <circle cx="195" cy="270" r="2" fill="var(--bg-card-2)"/>
-              </g>
-            </svg>
-          </div>
         </div>
       </div>
     </div>
@@ -925,57 +1075,57 @@
     <div class="container">
       <div class="section-head">
         <span class="kicker">Features</span>
-        <h2>Everything you need to measure pixels.</h2>
-        <p>Vernier sits as a transparent overlay on top of every other window. Hit the hotkey and the whole screen becomes measurable.</p>
+        <h2>From snap to spec.</h2>
+        <p>Edge-detected snaps that lock to real element bounds. Sticky guides. Measurements you can drag and pin. Region capture that hands off to your annotation tool. Built for designers and developers who measure for a living.</p>
       </div>
 
       <div class="features">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M3 8v4"/><path d="M21 8v4"/><path d="M7 10v2"/><path d="M11 9v3"/><path d="M15 9v3"/><path d="M19 10v2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 8h2M4 12h2M4 16h2M18 8h2M18 12h2M18 16h2M8 4v2M12 4v2M16 4v2M8 18v2M12 18v2M16 18v2"/></svg>
           </div>
-          <h3>Pixel-perfect distance</h3>
-          <p>Drag between any two points on the screen and read the distance in real device pixels — no zoom math required.</p>
+          <h3>Edge-detection snap</h3>
+          <p>Drag a region near any UI element and the box locks to its actual bounds — not just where your cursor was. Adjustable RGB tolerance handles shadows, gradients, and low-contrast edges.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="5" x2="21" y2="5"/><line x1="3" y1="3" x2="3" y2="7"/><line x1="21" y1="3" x2="21" y2="7"/><line x1="12" y1="5" x2="16" y2="13" stroke-dasharray="1.5 1.5"/><rect x="10" y="13" width="12" height="7" rx="2"/><line x1="13" y1="16.5" x2="19" y2="16.5" stroke-width="1.5"/></svg>
           </div>
-          <h3>Snap to objects</h3>
-          <p>Sweep a rectangle near any UI element and the overlay locks to its bounds. Get exact width and height in a single drag.</p>
+          <h3>Pinned measurements</h3>
+          <p>Press <strong>H</strong> or <strong>V</strong> to pin the current crosshair as a dimension pill. Nudge the label out of the way to read what's underneath — a dashed tether traces back to where the measurement was taken.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="2" x2="4" y2="22"/><line x1="20" y1="2" x2="20" y2="22"/><line x1="2" y1="8" x2="22" y2="8"/><line x1="2" y1="16" x2="22" y2="16"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="2.5 2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="2.5 2"/><path d="M18 9l3 3-3 3"/><path d="M9 18l3 3 3-3"/></svg>
           </div>
-          <h3>Snappable guides</h3>
-          <p>Drop horizontal and vertical guides that stick to screen elements. Check alignment across windows and apps.</p>
+          <h3>Sticky guides + nudge</h3>
+          <p>Drop horizontal and vertical guides that stay put across windows. Hold a modifier to flip H↔V mid-placement; arrow keys nudge by 1 px, with SHIFT for 10 px.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><circle cx="9.5" cy="12" r="3"/><path d="M16 9h4l-2 3 2 3h-4"/></svg>
           </div>
-          <h3>Crosshair mode</h3>
-          <p>A full-screen reticle that follows the cursor. Spot misalignment across an entire layout at a glance.</p>
+          <h3>Region capture &amp; handoff</h3>
+          <p>Click any measured region's camera pill to capture just that area. Auto-detects your installed annotation tool — CleanShot X, Shottr, Satty, Swappy, Flameshot — and opens the capture there. PNG output is DPI-tagged so it renders at logical size everywhere.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M10 10h6M6 14h12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="11" cy="11" r="4"/><path d="M14 14l4 4"/><path d="M10 9.5h2v3"/></svg>
           </div>
-          <h3>Global hotkey</h3>
-          <p>Toggle the overlay from anywhere with a configurable shortcut. Auto-installed on Hyprland; portal-based on other compositors.</p>
+          <h3>Figma-aware</h3>
+          <p>A companion plugin reports Figma's viewport zoom over a local bridge. Measurements inside the Figma window report canvas pixels at any zoom — no more multiplying by 1.73× in your head.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="4"/><path d="M8 5V3h8v2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="13" height="13" rx="2"/><path d="M16 15v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><path d="M11 8h6M11 11h6"/></svg>
           </div>
-          <h3>Annotated screenshots</h3>
-          <p>Capture the screen with your measurements baked in. Hand specs to designers and engineers in one paste.</p>
+          <h3>Paste-ready output</h3>
+          <p>Hit Enter and the dimensions land on your clipboard in your format: plain <code>1024,768</code>, CSS <code>width: 1024px;</code>, SASS, or height-first variants. Pick once in prefs; paste forever.</p>
         </div>
       </div>
     </div>
@@ -987,7 +1137,7 @@
       <div class="section-head">
         <span class="kicker">Cross-platform</span>
         <h2>Works on your machine. Whatever it is.</h2>
-        <p>The competition is macOS-only. Vernier is built from day one to be native everywhere — including Linux on Wayland, which most measurement tools won't touch.</p>
+        <p>Native overlays on macOS, Linux, and Windows. Wayland is first-class via wlroots layer-shell — not a screenshot daemon, not a portal hack. Most measurement tools won't touch it.</p>
       </div>
 
       <div class="platforms">
@@ -999,11 +1149,11 @@
             </div>
             <h3>macOS</h3>
           </div>
-          <p>Apple Silicon and Intel. Native menu-bar overlay. Free and open source.</p>
+          <p>Apple Silicon native. Borderless transparent overlay with a menu-bar icon. Free and open source.</p>
           <ul class="pf-list">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Native overlay window</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Retina-ready</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Menu-bar tray icon</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Borderless NSWindow overlay</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>NSStatusItem menu-bar icon</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Retina + multi-monitor</li>
           </ul>
           <span class="pf-status ready"><span class="dot"></span>Available now</span>
         </div>
@@ -1036,9 +1186,9 @@
           <p>First-class support for both X11 and Wayland. Hyprland is the primary development target.</p>
           <ul class="pf-list">
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>wlroots layer-shell overlay</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>StatusNotifierItem tray</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Auto-installed hotkey on Hyprland</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>GlobalShortcuts portal fallback</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>StatusNotifierItem tray (waybar-ready)</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>HiDPI + multi-monitor</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Zero-setup hotkey on Hyprland</li>
           </ul>
           <span class="pf-status ready"><span class="dot"></span>Available now</span>
         </div>
@@ -1049,10 +1199,13 @@
   <!-- ============================== TECH / RUST ============================== -->
   <section id="built-in-rust">
     <div class="container">
+      <div class="tech-head">
+        <span class="kicker">Built in Rust</span>
+        <h2>A measurement tool that respects your hardware.</h2>
+      </div>
+
       <div class="tech-grid">
         <div>
-          <span class="kicker">Built in Rust</span>
-          <h2 style="font-size: clamp(28px, 4vw, 40px); letter-spacing: -.02em; margin: 0 0 14px; font-weight: 600;">A measurement tool that respects your hardware.</h2>
           <p style="color: var(--text-muted); margin: 0; font-size: 17px;">
             Vernier is a single statically-linked Rust binary with a transparent native overlay on each platform. No Electron. No web runtime. No background bloat.
           </p>
@@ -1064,7 +1217,7 @@
               </span>
               <div>
                 <strong>Instant toggle</strong>
-                <span>Hotkey-to-overlay in a single frame. Idle CPU is effectively zero.</span>
+                <span>Hotkey-to-overlay in one frame. Idle CPU is effectively zero between sessions.</span>
               </div>
             </li>
             <li>
@@ -1072,26 +1225,26 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 7h10v10H7z"/></svg>
               </span>
               <div>
-                <strong>Tiny footprint</strong>
-                <span>One stripped binary. No service workers, no companion processes.</span>
+                <strong>One static binary</strong>
+                <span>No Electron. No web runtime. No background daemons besides the one you toggled.</span>
               </div>
             </li>
             <li>
               <span class="tb-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
               </span>
               <div>
-                <strong>Modular workspace</strong>
-                <span>Core, platform, UI, and app split into clean crates. Each backend lives behind a single trait.</span>
+                <strong>60 Hz on Retina</strong>
+                <span>A two-layer renderer caches guides and held rects so only the live crosshair re-rasterizes. Smooth at full resolution.</span>
               </div>
             </li>
             <li>
               <span class="tb-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 14h2M12 14h4"/></svg>
               </span>
               <div>
-                <strong>Memory safe</strong>
-                <span>Rust's ownership model means the overlay can't leak, crash, or take down your session.</span>
+                <strong>Real Wayland</strong>
+                <span>Native wlroots layer-shell overlay. Zero-setup hotkey on Hyprland; portal fallback elsewhere.</span>
               </div>
             </li>
             <li>
@@ -1099,8 +1252,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>
               </span>
               <div>
-                <strong>Dual-licensed</strong>
-                <span>MIT and Apache-2.0. Use it at home, at work, or fork it for your own thing.</span>
+                <strong>Open, dual-licensed</strong>
+                <span>MIT or Apache-2.0. No license server. No telemetry. No signup. Ever.</span>
               </div>
             </li>
             <li>
@@ -1108,8 +1261,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .4 1.8l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.4 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.4l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .4-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.4-1.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.4h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.4l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.4 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
               </span>
               <div>
-                <strong>Customizable</strong>
-                <span>Configure the toggle shortcut, the theme, and the units from the prefs window.</span>
+                <strong>Configurable down to the pixel</strong>
+                <span>Every shortcut, color, unit, tolerance level, and paste format is exposed in the prefs window. Sessions persist across toggles.</span>
               </div>
             </li>
           </ul>
@@ -1119,14 +1272,8 @@
           <div class="code-block">
             <div class="code-head"><span class="dot"></span>terminal</div>
             <div class="code-body">
-<span class="comment"># Linux (Arch / Hyprland)</span>
-<span class="prompt">$ </span><span class="cmd">cargo install</span> <span class="arg">vernier</span>
-<span class="prompt">$ </span><span class="cmd">vernier</span><br>
-<span class="comment"># default toggle: CTRL+SHIFT+ALT+SUPER+F</span>
-<span class="comment"># the daemon auto-installs the bind on Hyprland</span>
-<span class="ok">›</span> <span class="cmd">layer-shell overlay registered</span><br>
-<span class="prompt">$ </span><span class="cmd">vernier</span> <span class="arg">toggle</span>     <span class="comment"># show/hide</span>
-<span class="prompt">$ </span><span class="cmd">vernier</span> <span class="arg">quit</span>       <span class="comment"># stop daemon</span>
+<span class="comment"># Install with Cargo</span>
+<span class="prompt">$ </span><span class="cmd">cargo install</span> <span class="arg">vernier-rs</span>
             </div>
           </div>
         </div>
@@ -1139,7 +1286,7 @@
     <div class="container cta-strip">
       <div class="cta-card">
         <h2>Stop guessing. Start measuring.</h2>
-        <p>Free, open source, and on every desktop you use. No license server, no email signup, no upsell.</p>
+        <p>Free, open source, and on every desktop you use. No license server. No signup. No upsell.</p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg" href="https://github.com/jondkinney/vernier/releases/latest" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1148,7 +1295,7 @@
           <a class="btn btn-secondary btn-lg" href="https://github.com/jondkinney/vernier" target="_blank" rel="noopener">View source</a>
         </div>
         <div class="install-cmd" id="installCmd">
-          <span><span style="color: var(--text-subtle)">$</span> cargo install vernier</span>
+          <span><span style="color: var(--text-subtle)">$</span> cargo install vernier-rs</span>
           <button id="copyBtn" aria-label="Copy install command" title="Copy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </button>
@@ -1225,7 +1372,7 @@
       const btn = document.getElementById('copyBtn');
       btn.addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText('cargo install vernier');
+          await navigator.clipboard.writeText('cargo install vernier-rs');
           const orig = btn.innerHTML;
           btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           setTimeout(() => { btn.innerHTML = orig; }, 1400);
